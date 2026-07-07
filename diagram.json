@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "author": "Antigravity",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-led", "id": "led_water", "top": -150, "left": 0, "attrs": { "color": "blue", "label": "Water" } },
+    { "type": "wokwi-led", "id": "led_detergent", "top": -150, "left": 50, "attrs": { "color": "green", "label": "Detergent" } },
+    { "type": "wokwi-led", "id": "led_drain", "top": -150, "left": 100, "attrs": { "color": "yellow", "label": "Drain" } },
+    { "type": "wokwi-led", "id": "led_motor_r", "top": -150, "left": 150, "attrs": { "color": "orange", "label": "Motor R" } },
+    { "type": "wokwi-led", "id": "led_motor_l", "top": -150, "left": 200, "attrs": { "color": "red", "label": "Motor L" } },
+    
+    { "type": "wokwi-resistor", "id": "r1", "top": -100, "left": 0, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": -100, "left": 50, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r3", "top": -100, "left": 100, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r4", "top": -100, "left": 150, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r5", "top": -100, "left": 200, "attrs": { "value": "220" } },
+    
+    { "type": "wokwi-dip-switch-8", "id": "dip", "top": 220, "left": 250, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn_start", "top": 250, "left": 0, "attrs": { "color": "green", "label": "Start" } },
+    { "type": "wokwi-pushbutton", "id": "btn_stop", "top": 250, "left": 100, "attrs": { "color": "red", "label": "Stop" } },
+
+    { "type": "wokwi-resistor", "id": "r_pd_dip1", "top": 300, "left": 250, "attrs": { "value": "10000" } },
+    { "type": "wokwi-resistor", "id": "r_pd_dip2", "top": 300, "left": 280, "attrs": { "value": "10000" } },
+    { "type": "wokwi-resistor", "id": "r_pd_dip3", "top": 300, "left": 310, "attrs": { "value": "10000" } },
+    { "type": "wokwi-resistor", "id": "r_pd_start", "top": 320, "left": 0, "attrs": { "value": "10000" } },
+    { "type": "wokwi-resistor", "id": "r_pd_stop", "top": 320, "left": 100, "attrs": { "value": "10000" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    
+    [ "led_water:A", "esp:13", "blue", [ "v0" ] ],
+    [ "led_detergent:A", "esp:14", "green", [ "v0" ] ],
+    [ "led_drain:A", "esp:16", "yellow", [ "v0" ] ],
+    [ "led_motor_r:A", "esp:17", "orange", [ "v0" ] ],
+    [ "led_motor_l:A", "esp:18", "red", [ "v0" ] ],
+    
+    [ "led_water:C", "r1:1", "black", [ "v0" ] ],
+    [ "led_detergent:C", "r2:1", "black", [ "v0" ] ],
+    [ "led_drain:C", "r3:1", "black", [ "v0" ] ],
+    [ "led_motor_r:C", "r4:1", "black", [ "v0" ] ],
+    [ "led_motor_l:C", "r5:1", "black", [ "v0" ] ],
+    
+    [ "r1:2", "esp:GND.1", "black", [ "v0" ] ],
+    [ "r2:2", "esp:GND.1", "black", [ "v0" ] ],
+    [ "r3:2", "esp:GND.1", "black", [ "v0" ] ],
+    [ "r4:2", "esp:GND.1", "black", [ "v0" ] ],
+    [ "r5:2", "esp:GND.1", "black", [ "v0" ] ],
+    
+    [ "dip:1a", "esp:3V3", "red", [ "v0" ] ],
+    [ "dip:2a", "esp:3V3", "red", [ "v0" ] ],
+    [ "dip:3a", "esp:3V3", "red", [ "v0" ] ],
+    [ "dip:1b", "esp:19", "green", [ "v0" ] ],
+    [ "dip:2b", "esp:21", "green", [ "v0" ] ],
+    [ "dip:3b", "esp:22", "green", [ "v0" ] ],
+    
+    [ "dip:1b", "r_pd_dip1:1", "black", [ "v0" ] ],
+    [ "r_pd_dip1:2", "esp:GND.2", "black", [ "v0" ] ],
+    [ "dip:2b", "r_pd_dip2:1", "black", [ "v0" ] ],
+    [ "r_pd_dip2:2", "esp:GND.2", "black", [ "v0" ] ],
+    [ "dip:3b", "r_pd_dip3:1", "black", [ "v0" ] ],
+    [ "r_pd_dip3:2", "esp:GND.2", "black", [ "v0" ] ],
+    
+    [ "btn_start:1.r", "esp:3V3", "red", [ "v0" ] ],
+    [ "btn_start:2.r", "esp:23", "green", [ "v0" ] ],
+    [ "btn_start:2.r", "r_pd_start:1", "black", [ "v0" ] ],
+    [ "r_pd_start:2", "esp:GND.2", "black", [ "v0" ] ],
+    
+    [ "btn_stop:1.r", "esp:3V3", "red", [ "v0" ] ],
+    [ "btn_stop:2.r", "esp:25", "green", [ "v0" ] ],
+    [ "btn_stop:2.r", "r_pd_stop:1", "black", [ "v0" ] ],
+    [ "r_pd_stop:2", "esp:GND.2", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
