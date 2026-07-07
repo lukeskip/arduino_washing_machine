@@ -13,7 +13,7 @@ int dry_input = 22;
 int start_input = 23;
 int stop_input = 25;
 unsigned long step_time = 0; 
-int times = 0;
+int cycle_count = 0;
 
 enum STATE_VALUES{
   WAITING,
@@ -35,15 +35,17 @@ enum CYCLE_VALUES{
 CYCLE_VALUES cycle = COMPLETE;
 
 void stop(String message = "¡CANCELADO DE EMERGENCIA!"){
-  Serial.println(message);
-  digitalWrite(water,LOW);
-  digitalWrite(detergent,LOW);
-  digitalWrite(drain,LOW);
-  digitalWrite(motor_right,LOW);
-  digitalWrite(motor_left,LOW);
-  digitalWrite(water,LOW);
-  digitalWrite(water,LOW);
-  state = WAITING;
+  if(state!= WAITING){
+    Serial.println(message);
+    digitalWrite(water,LOW);
+    digitalWrite(detergent,LOW);
+    digitalWrite(drain,LOW);
+    digitalWrite(motor_right,LOW);
+    digitalWrite(motor_left,LOW);
+    digitalWrite(water,LOW);
+    digitalWrite(water,LOW);
+    state = WAITING;
+  }
 }
 
 void change_state (STATE_VALUES new_state){
@@ -100,6 +102,7 @@ void run_complete_cycle(){
     case WAITING:
       // Esperar a que se presione el botón de inicio
       if (digitalRead(start_input)) {
+        Serial.println("COMPLETE CYCLE...");
        run_watering();
       }
     break;
@@ -110,7 +113,7 @@ void run_complete_cycle(){
     break;
     case POURING_DETERGENT:
       if(time_passed(2000)){
-        times = 0;
+        cycle_count = 0;
         run_washing_right();
       }
     break;
@@ -121,11 +124,12 @@ void run_complete_cycle(){
     break;
     case WASHING_LEFT:
       if(time_passed(5000)){
-        if (times < 5) {
-          times++;
+        Serial.println("Ciclos contados: " + String(cycle_count));
+        if (cycle_count < 5) {
+          cycle_count++;
           run_washing_right();
         } else {
-          times = 0;
+          cycle_count = 0;
           run_drain();
           change_state(DRAIN);
         }
@@ -145,11 +149,12 @@ void run_rinse (){
       // Esperar a que se presione el botón de inicio
       if (digitalRead(start_input)) {
         run_watering();
+        Serial.println("RINSE CYCLE...");
       }
     break;
     case WATERING:
       if(time_passed(3000)){
-        times = 0;
+        cycle_count = 0;
         run_washing_right();
       }
     break;
@@ -160,11 +165,11 @@ void run_rinse (){
     break;
     case WASHING_LEFT:
       if(time_passed(5000)){
-        if (times < 5) {
-          times++;
+        if (cycle_count < 5) {
+          cycle_count++;
           run_washing_right();
         } else {
-          times = 0;
+          cycle_count = 0;
           run_drain();
           change_state(DRAIN);
         }
@@ -182,7 +187,8 @@ void run_dry (){
   switch (state) {
     case WAITING:
       if (digitalRead(start_input)) {
-        times = 0;
+        cycle_count = 0;
+        Serial.println("DRY CYCLE...");
         run_washing_right();
       }
     break;
@@ -193,11 +199,12 @@ void run_dry (){
     break;
     case WASHING_LEFT:
       if(time_passed(5000)){
-        if(times < 5){
-          times++;
+        Serial.println("Ciclos contados: " + String(cycle_count));
+        if(cycle_count < 5){
+          cycle_count++;
           run_washing_right();
         } else {
-          times = 0;
+          cycle_count = 0;
           run_finishing();
         }
       }
@@ -225,12 +232,6 @@ void setup() {
 void loop() {
   bool stop_value = digitalRead(stop_input);
 
-  static unsigned long last_print = 0;
-  if(millis() - last_print > 1000){
-    Serial.printf("DEBUG -> State: %d, Cycle: %d, Start_btn: %d, Dip_1: %d\n", state, cycle, digitalRead(start_input), digitalRead(complete_cycle_input));
-    last_print = millis();
-  }
-
   if(!stop_value){
     if(state == WAITING){
       bool rinse_value = digitalRead(rinse_input);
@@ -249,6 +250,7 @@ void loop() {
   
     switch (cycle) {
       case RINSE:
+        
         run_rinse();
         break;
       case DRY:
