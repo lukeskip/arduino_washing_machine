@@ -29,7 +29,8 @@ STATE_VALUES state = WAITING;
 enum CYCLE_VALUES{
   COMPLETE,
   RINSE,
-  DRY
+  DRY,
+  NONE
 };
 
 CYCLE_VALUES cycle = COMPLETE;
@@ -251,12 +252,13 @@ void loop() {
         cycle = RINSE; 
       } else if(dry_value){ 
         cycle = DRY; 
+      }else{
+        cycle = NONE;
       }
     }
   
     switch (cycle) {
       case RINSE:
-        
         run_rinse();
         break;
       case DRY:
@@ -264,6 +266,8 @@ void loop() {
         break;
       case COMPLETE:
         run_complete_cycle();
+        break;
+      case NONE:
         break;
     }
 
