@@ -14,6 +14,7 @@ int start_input = 23;
 int stop_input = 25;
 unsigned long step_time = 0; 
 int cycle_count = 0;
+int standing = 27;
 
 enum STATE_VALUES{
   WAITING,
@@ -58,6 +59,14 @@ bool time_passed(unsigned long wait_milliseconds){
   return (millis() - step_time >= wait_milliseconds);
 }
 
+void led_blinking(int pin, int frequency = 2){
+  static unsigned long last_toggle = 0;
+  if(millis() - last_toggle >= 1000 / frequency) {
+    digitalWrite(pin, !digitalRead(pin));
+    last_toggle = millis();
+  }
+}
+
 void run_watering(){
    Serial.println("Iniciando llenado...");
     digitalWrite(water, HIGH);
@@ -100,9 +109,15 @@ void run_finishing(){
   stop("TERMINANDO...");
 }
 
+void run_waiting(){
+  led_blinking(standing);
+  
+}
+
 void run_complete_cycle(){
   switch(state){
     case WAITING:
+
       // Esperar a que se presione el botón de inicio
       if (digitalRead(start_input)) {
         Serial.println("COMPLETE CYCLE...");
@@ -228,6 +243,8 @@ void setup() {
   pinMode(drain, OUTPUT);
   pinMode(motor_right, OUTPUT);
   pinMode(motor_left, OUTPUT);
+  pinMode(standing, OUTPUT);
+
   pinMode(complete_cycle_input, INPUT);
   pinMode(rinse_input, INPUT);
   pinMode(dry_input, INPUT);
@@ -241,6 +258,8 @@ void loop() {
 
   if(!stop_value){
     if(state == WAITING){
+      // encender led standing
+      run_waiting();
       bool rinse_value = digitalRead(rinse_input);
       bool dry_value = digitalRead(dry_input);
       bool complete_cycle_value = digitalRead(complete_cycle_input);
