@@ -71,8 +71,9 @@ void run_pouring_detergent(){
 }
 
 void run_washing_right(){
-  Serial.println("detergente completado, iniciando lavado a la derecha...");
+  Serial.println("iniciando lavado a la derecha...");
   digitalWrite(detergent, LOW);
+  digitalWrite(water, LOW);
   digitalWrite(motor_left, LOW);
   digitalWrite(motor_right, HIGH);
   change_state(WASHING_RIGHT);
@@ -205,8 +206,13 @@ void run_dry (){
           run_washing_right();
         } else {
           cycle_count = 0;
-          run_finishing();
+          run_drain();
         }
+      }
+    break;
+    case DRAIN:
+      if(time_passed(5000)){ // 5 segundos de drenado
+        run_finishing();
       }
     break;
   }
