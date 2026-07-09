@@ -91,6 +91,7 @@ void run_drain(){
   digitalWrite(motor_right, LOW);
   digitalWrite(motor_left, LOW);
   digitalWrite(drain, HIGH);
+  change_state(DRAIN);
 }
 
 
@@ -132,7 +133,6 @@ void run_complete_cycle(){
         } else {
           cycle_count = 0;
           run_drain();
-          change_state(DRAIN);
         }
       }
     break;
